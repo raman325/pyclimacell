@@ -12,9 +12,9 @@ HISTORICAL_STATION = "historical/station"
 FORECAST_NOWCAST_MAX_AGE = {"minutes": 360}
 FORECAST_HOURLY_MAX_AGE = {"hours": 96}
 FORECAST_DAILY_MAX_AGE = {"days": 15}
-HISTORICAL_CLIMACELL_MAX_AGE = {"hours": -6}
+HISTORICAL_CLIMACELL_MAX_AGE = {"hours": 6}
 HISTORICAL_STATION_MAX_INTERVAL = {"hours": 24}
-HISTORICAL_STATION_MAX_AGE = {"weeks": -4}
+HISTORICAL_STATION_MAX_AGE = {"weeks": 4}
 
 HEADERS = {"content-type": "application/json"}
 
