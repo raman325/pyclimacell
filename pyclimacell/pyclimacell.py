@@ -104,7 +104,7 @@ def validate_timerange(
         )
 
 
-class ClimaCellAPI:
+class ClimaCell:
     """Async class to query the ClimaCell API."""
 
     def __init__(
