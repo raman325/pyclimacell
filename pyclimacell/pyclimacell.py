@@ -1,11 +1,12 @@
 """Main module."""
-from aiohttp import ClientSession
+from datetime import datetime, timedelta
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
+from aiohttp import ClientSession
+
 from pyclimacell.const import (
     BASE_URL,
-    HEADERS,
-    REALTIME,
     FIELDS,
     FORECAST_DAILY,
     FORECAST_DAILY_MAX_AGE,
@@ -13,13 +14,14 @@ from pyclimacell.const import (
     FORECAST_HOURLY_MAX_AGE,
     FORECAST_NOWCAST,
     FORECAST_NOWCAST_MAX_AGE,
+    HEADERS,
     HISTORICAL_CLIMACELL,
-    HISTORICAL_STATION,
     HISTORICAL_CLIMACELL_MAX_AGE,
+    HISTORICAL_STATION,
     HISTORICAL_STATION_MAX_AGE,
     HISTORICAL_STATION_MAX_INTERVAL,
+    REALTIME,
 )
-from datetime import datetime, timedelta
 
 _LOGGER = logging.getLogger(__name__)
 
