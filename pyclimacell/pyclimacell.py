@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import logging
 from typing import Any, Dict, List, Optional
 
-from aiohttp import ClientSession
+from aiohttp import ClientConnectionError, ClientResponseError, ClientSession
 
 from pyclimacell.const import (
     BASE_URL,
@@ -137,23 +137,35 @@ class ClimaCell:
         self, relative_endpoint: str, params: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Call ClimaCell API."""
-        if self.session:
-            resp = await self.session.get(
-                f"{BASE_URL}/{relative_endpoint}",
-                headers=HEADERS,
-                params={**params, **self.params},
-                raise_for_status=True,
-            )
-            return await resp.json()
+        try:
+            if self.session:
+                resp = await self.session.get(
+                    f"{BASE_URL}/{relative_endpoint}",
+                    headers=HEADERS,
+                    params={**params, **self.params},
+                    raise_for_status=True,
+                )
+                return await resp.json()
 
-        async with ClientSession() as session:
-            resp = await session.get(
-                f"{BASE_URL}/{relative_endpoint}",
-                headers=HEADERS,
-                params={**params, **self.params},
-                raise_for_status=True,
-            )
-            return await resp.json()
+            async with ClientSession() as session:
+                resp = await session.get(
+                    f"{BASE_URL}/{relative_endpoint}",
+                    headers=HEADERS,
+                    params={**params, **self.params},
+                    raise_for_status=True,
+                )
+                return await resp.json()
+        except ClientResponseError as e:
+            if e.status == 400:
+                raise MalformedRequestException
+            elif e.status == 401:
+                raise InvalidAPIKeyException
+            elif e.status == 429:
+                raise RateLimitedException
+            else:
+                raise UnknownException
+        except ClientConnectionError as e:
+            raise CantConnectException
 
     def availabile_fields(self, endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
@@ -287,3 +299,23 @@ class ClimaCell:
             end_time,
             duration,
         )
+
+
+class MalformedRequestException(ClientResponseError):
+    """Raised when request was malformed."""
+
+
+class InvalidAPIKeyException(ClientResponseError):
+    """Raised when API key is invalid."""
+
+
+class RateLimitedException(ClientResponseError):
+    """Raised when API rate limit has been exceeded."""
+
+
+class UnknownException(ClientResponseError):
+    """Raised when unknown error occurs."""
+
+
+class CantConnectException(ClientConnectionError):
+    """Raise when client can't connect to ClimaCell API."""
