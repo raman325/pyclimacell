@@ -157,15 +157,15 @@ class ClimaCell:
                 return await resp.json()
         except ClientResponseError as e:
             if e.status == 400:
-                raise MalformedRequestException
-            elif e.status == 401:
-                raise InvalidAPIKeyException
+                raise MalformedRequestException(e.request_info, e.history, status=e.status, message=e.message)
+            elif e.status == 401 or e.status == 403:
+                raise InvalidAPIKeyException(e.request_info, e.history, status=e.status, message=e.message)
             elif e.status == 429:
-                raise RateLimitedException
+                raise RateLimitedException(e.request_info, e.history, status=e.status, message=e.message)
             else:
-                raise UnknownException
-        except ClientConnectionError:
-            raise CantConnectException
+                raise UnknownException(e.request_info, e.history, status=e.status, message=e.message)
+        except ClientConnectionError as e:
+            raise CantConnectException(*e.args)
 
     def availabile_fields(self, endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
