@@ -164,7 +164,7 @@ class ClimaCell:
                 raise RateLimitedException
             else:
                 raise UnknownException
-        except ClientConnectionError as e:
+        except ClientConnectionError:
             raise CantConnectException
 
     def availabile_fields(self, endpoint: str) -> List[str]:
