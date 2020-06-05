@@ -16,7 +16,7 @@ Python ClimaCell API
 
 
 
-Async Python3.7+ package to access the `CliamCell Weather API<https://www.climacell.co/weather-api/>`
+Async Python3.7+ package to access the `ClimaCell Weather API<https://www.climacell.co/weather-api/>`
 
 
 * Free software: MIT license
