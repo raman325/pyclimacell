@@ -1,7 +1,7 @@
 """Main module."""
 from datetime import datetime, timedelta
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ClientConnectionError, ClientResponseError, ClientSession
 
@@ -112,8 +112,8 @@ class ClimaCell:
     def __init__(
         self,
         apikey: str,
-        latitude: str,
-        longitude: str,
+        latitude: Union[int, float, str],
+        longitude: Union[int, float, str],
         unit_system: str = "us",
         session: ClientSession = None,
     ) -> None:
@@ -122,8 +122,8 @@ class ClimaCell:
             raise ValueError("`unit_system` must be `si` or `us`")
 
         self.apikey = apikey
-        self.latitude = latitude
-        self.longitude = longitude
+        self.latitude = str(latitude)
+        self.longitude = str(longitude)
         self.unit_system = unit_system.lower()
         self.session = session
         self.params = {
@@ -157,13 +157,21 @@ class ClimaCell:
                 return await resp.json()
         except ClientResponseError as e:
             if e.status == 400:
-                raise MalformedRequestException(e.request_info, e.history, status=e.status, message=e.message)
+                raise MalformedRequestException(
+                    e.request_info, e.history, status=e.status, message=e.message
+                )
             elif e.status == 401 or e.status == 403:
-                raise InvalidAPIKeyException(e.request_info, e.history, status=e.status, message=e.message)
+                raise InvalidAPIKeyException(
+                    e.request_info, e.history, status=e.status, message=e.message
+                )
             elif e.status == 429:
-                raise RateLimitedException(e.request_info, e.history, status=e.status, message=e.message)
+                raise RateLimitedException(
+                    e.request_info, e.history, status=e.status, message=e.message
+                )
             else:
-                raise UnknownException(e.request_info, e.history, status=e.status, message=e.message)
+                raise UnknownException(
+                    e.request_info, e.history, status=e.status, message=e.message
+                )
         except ClientConnectionError as e:
             raise CantConnectException(*e.args)
 
