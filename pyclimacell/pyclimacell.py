@@ -155,25 +155,37 @@ class ClimaCell:
                     raise_for_status=True,
                 )
                 return await resp.json()
-        except ClientResponseError as e:
-            if e.status == 400:
+        except ClientResponseError as error:
+            if error.status == 400:
                 raise MalformedRequestException(
-                    e.request_info, e.history, status=e.status, message=e.message
+                    error.request_info,
+                    error.history,
+                    status=error.status,
+                    message=error.message,
                 )
-            elif e.status == 401 or e.status == 403:
+            elif error.status in (401, 403):
                 raise InvalidAPIKeyException(
-                    e.request_info, e.history, status=e.status, message=e.message
+                    error.request_info,
+                    error.history,
+                    status=error.status,
+                    message=error.message,
                 )
-            elif e.status == 429:
+            elif error.status == 429:
                 raise RateLimitedException(
-                    e.request_info, e.history, status=e.status, message=e.message
+                    error.request_info,
+                    error.history,
+                    status=error.status,
+                    message=error.message,
                 )
             else:
                 raise UnknownException(
-                    e.request_info, e.history, status=e.status, message=e.message
+                    error.request_info,
+                    error.history,
+                    status=error.status,
+                    message=error.message,
                 )
-        except ClientConnectionError as e:
-            raise CantConnectException(*e.args)
+        except ClientConnectionError as error:
+            raise CantConnectException(*error.args)
 
     def availabile_fields(self, endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
