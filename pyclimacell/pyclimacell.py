@@ -191,6 +191,10 @@ class ClimaCell:
         "Return available fields for a given endpoint."
         return [field for field in FIELDS if endpoint in FIELDS[field]]
 
+    def first_field(self, endpoint:  str) -> List[str]:
+        "Return available fields for a given endpoint."
+        return [self.availabile_fields(endpoint)[0]]
+
     async def realtime(self, fields: List[str]) -> Dict[str, Any]:
         """Return realtime weather conditions from ClimaCell API."""
         return await self._call_api(
