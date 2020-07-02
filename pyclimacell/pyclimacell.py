@@ -22,6 +22,13 @@ from .const import (
     HISTORICAL_STATION_MAX_INTERVAL,
     REALTIME,
 )
+from .exceptions import (
+    CantConnectException,
+    InvalidAPIKeyException,
+    MalformedRequestException,
+    RateLimitedException,
+    UnknownException,
+)
 from .helpers import async_to_sync
 
 _LOGGER = logging.getLogger(__name__)
@@ -158,35 +165,15 @@ class ClimaCell:
                 return await resp.json()
         except ClientResponseError as error:
             if error.status == 400:
-                raise MalformedRequestException(
-                    error.request_info,
-                    error.history,
-                    status=error.status,
-                    message=error.message,
-                )
+                raise MalformedRequestException()
             elif error.status in (401, 403):
-                raise InvalidAPIKeyException(
-                    error.request_info,
-                    error.history,
-                    status=error.status,
-                    message=error.message,
-                )
+                raise InvalidAPIKeyException()
             elif error.status == 429:
-                raise RateLimitedException(
-                    error.request_info,
-                    error.history,
-                    status=error.status,
-                    message=error.message,
-                )
+                raise RateLimitedException()
             else:
-                raise UnknownException(
-                    error.request_info,
-                    error.history,
-                    status=error.status,
-                    message=error.message,
-                )
-        except ClientConnectionError as error:
-            raise CantConnectException(*error.args)
+                raise UnknownException()
+        except ClientConnectionError:
+            raise CantConnectException()
 
     @staticmethod
     def availabile_fields(endpoint: str) -> List[str]:
@@ -398,23 +385,3 @@ class ClimaCellSync(ClimaCell):
         return await super(ClimaCellSync, self).historical_station(
             fields, end_time, duration
         )
-
-
-class MalformedRequestException(ClientResponseError):
-    """Raised when request was malformed."""
-
-
-class InvalidAPIKeyException(ClientResponseError):
-    """Raised when API key is invalid."""
-
-
-class RateLimitedException(ClientResponseError):
-    """Raised when API rate limit has been exceeded."""
-
-
-class UnknownException(ClientResponseError):
-    """Raised when unknown error occurs."""
-
-
-class CantConnectException(ClientConnectionError):
-    """Raise when client can't connect to ClimaCell API."""
