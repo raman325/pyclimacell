@@ -24,7 +24,7 @@ Example Code
 .. code-block:: python
 
   from pyclimacell import ClimaCellSync
-  from pyclimacell.const import FORECAST_NOWCAST,  REALTIME
+  from pyclimacell.const import FORECAST_NOWCAST, REALTIME
   api = ClimaCellSync("MY_API_KEY", latitude, longitude)
   print(api.realtime(api.available_fields(REALTIME)))
   print(api.forecast_nowcast(api.available_fields(FORECAST_NOWCAST), start_time, timedelta_duration, timestep))
