@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ClientConnectionError, ClientResponseError, ClientSession
 
-from pyclimacell.const import (
+from .const import (
     BASE_URL,
     FIELDS,
     FORECAST_DAILY,
@@ -22,6 +22,7 @@ from pyclimacell.const import (
     HISTORICAL_STATION_MAX_INTERVAL,
     REALTIME,
 )
+from .helpers import async_to_sync
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -193,7 +194,7 @@ class ClimaCell:
         return [field for field in FIELDS if endpoint in FIELDS[field]]
 
     @staticmethod
-    def first_field(endpoint:  str) -> List[str]:
+    def first_field(endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
         return [ClimaCell.availabile_fields(endpoint)[0]]
 
@@ -302,7 +303,7 @@ class ClimaCell:
         duration: timedelta,
         timestep: int = 5,
     ) -> List[Dict[str, Any]]:
-        """Retrurn historical data from ClimaCell data."""
+        """Return historical data from ClimaCell data."""
         return await self._historical(
             HISTORICAL_CLIMACELL,
             HISTORICAL_CLIMACELL_MAX_AGE,
@@ -316,7 +317,7 @@ class ClimaCell:
     async def historical_station(
         self, fields: List[str], end_time: Optional[datetime], duration: timedelta
     ) -> List[Dict[str, Any]]:
-        """Retrurn historical data from weather stations."""
+        """Return historical data from weather stations."""
         return await self._historical(
             HISTORICAL_STATION,
             HISTORICAL_STATION_MAX_AGE,
@@ -324,6 +325,78 @@ class ClimaCell:
             fields,
             end_time,
             duration,
+        )
+
+
+class ClimaCellSync(ClimaCell):
+    """Synchronous class to query the ClimaCell API."""
+
+    def __init__(
+        self,
+        apikey: str,
+        latitude: Union[int, float, str],
+        longitude: Union[int, float, str],
+        unit_system: str = "us",
+    ) -> None:
+        """Initialize Synchronous ClimaCell API object."""
+        super(ClimaCellSync, self).__init__(apikey, latitude, longitude, unit_system)
+
+    @async_to_sync
+    async def realtime(self, fields: List[str]) -> Dict[str, Any]:
+        """Return realtime weather conditions from ClimaCell API."""
+        return await super(ClimaCellSync, self).realtime(fields)
+
+    @async_to_sync
+    async def forecast_nowcast(
+        self,
+        fields: List[str],
+        start_time: Optional[datetime],
+        duration: timedelta,
+        timestep: int = 5,
+    ) -> List[Dict[str, Any]]:
+        """Return forecast data from ClimaCell's NowCast API for a given time period."""
+        return await super(ClimaCellSync, self).forecast_nowcast(
+            fields, start_time, duration, timestep
+        )
+
+    @async_to_sync
+    async def forecast_daily(
+        self, fields: List[str], start_time: Optional[datetime], duration: timedelta
+    ) -> List[Dict[str, Any]]:
+        """Return daily forecast data from ClimaCell's API for a given time period."""
+        return await super(ClimaCellSync, self).forecast_daily(
+            fields, start_time, duration
+        )
+
+    @async_to_sync
+    async def forecast_hourly(
+        self, fields: List[str], start_time: Optional[datetime], duration: timedelta
+    ) -> List[Dict[str, Any]]:
+        """Return hourly forecast data from ClimaCell's API for a given time period."""
+        return await super(ClimaCellSync, self).forecast_hourly(
+            fields, start_time, duration
+        )
+
+    @async_to_sync
+    async def historical_climacell(
+        self,
+        fields: List[str],
+        end_time: Optional[datetime],
+        duration: timedelta,
+        timestep: int = 5,
+    ) -> List[Dict[str, Any]]:
+        """Return historical data from ClimaCell data."""
+        return await super(ClimaCellSync, self).historical_climacell(
+            fields, end_time, duration, timestep
+        )
+
+    @async_to_sync
+    async def historical_station(
+        self, fields: List[str], end_time: Optional[datetime], duration: timedelta
+    ) -> List[Dict[str, Any]]:
+        """Return historical data from weather stations."""
+        return await super(ClimaCellSync, self).historical_station(
+            fields, end_time, duration
         )
 
 
