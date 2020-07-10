@@ -1,7 +1,9 @@
 """Exceptions for pyclimacell."""
 
+
 class ClimaCellException(Exception):
     """Base Exception class for pyclimacell."""
+
 
 class MalformedRequestException(ClimaCellException):
     """Raised when request was malformed."""

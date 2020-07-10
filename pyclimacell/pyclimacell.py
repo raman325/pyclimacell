@@ -1,6 +1,7 @@
 """Main module."""
 from datetime import datetime, timedelta
 import logging
+import pytz
 from typing import Any, Dict, List, Optional, Union
 
 from aiohttp import ClientConnectionError, ClientResponseError, ClientSession
@@ -114,6 +115,13 @@ def validate_timerange(
         )
 
 
+def dt_to_utc(input_dt: datetime) -> datetime:
+    """If input datetime has a timezone defined, convert to UTC."""
+    if input_dt and input_dt.tzinfo:
+        return input_dt.astimezone(pytz.utc)
+    return input_dt
+
+
 class ClimaCell:
     """Async class to query the ClimaCell API."""
 
@@ -129,28 +137,28 @@ class ClimaCell:
         if unit_system.lower() not in ("us", "si"):
             raise ValueError("`unit_system` must be `si` or `us`")
 
-        self.apikey = apikey
+        self._apikey = apikey
         self.latitude = str(latitude)
         self.longitude = str(longitude)
         self.unit_system = unit_system.lower()
-        self.session = session
-        self.params = {
+        self._session = session
+        self._params = {
             "lat": self.latitude,
             "lon": self.longitude,
             "unit_system": self.unit_system,
-            "apikey": self.apikey,
         }
+        self._headers = {**HEADERS, "apikey": self._apikey}
 
     async def _call_api(
         self, relative_endpoint: str, params: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Call ClimaCell API."""
         try:
-            if self.session:
-                resp = await self.session.get(
+            if self._session:
+                resp = await self._session.get(
                     f"{BASE_URL}/{relative_endpoint}",
-                    headers=HEADERS,
-                    params={**params, **self.params},
+                    headers=self._headers,
+                    params={**self._params, **params},
                     raise_for_status=True,
                 )
                 return await resp.json()
@@ -158,8 +166,8 @@ class ClimaCell:
             async with ClientSession() as session:
                 resp = await session.get(
                     f"{BASE_URL}/{relative_endpoint}",
-                    headers=HEADERS,
-                    params={**params, **self.params},
+                    headers=self._headers,
+                    params={**self._params, **params},
                     raise_for_status=True,
                 )
                 return await resp.json()
@@ -176,7 +184,7 @@ class ClimaCell:
             raise CantConnectException()
 
     @staticmethod
-    def availabile_fields(endpoint: str) -> List[str]:
+    def available_fields(endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
         return [field for field in FIELDS if endpoint in FIELDS[field]]
 
@@ -201,6 +209,7 @@ class ClimaCell:
         **kwargs,
     ) -> List[Dict[str, Any]]:
         """Return forecast data from ClimaCell's API for a given time period."""
+        start_time = dt_to_utc(start_time)
         validate_timerange(start_time, None, duration, max_age)
         if start_time:
             params = {
@@ -261,6 +270,7 @@ class ClimaCell:
         **kwargs,
     ) -> List[Dict[str, Any]]:
         """Return historical data from ClimaCell's API for a given time period."""
+        end_time = dt_to_utc(end_time)
         validate_timerange(None, end_time, duration, max_age, max_interval)
         if end_time:
             params = {
