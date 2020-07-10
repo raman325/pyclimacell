@@ -191,7 +191,7 @@ class ClimaCell:
     @staticmethod
     def first_field(endpoint: str) -> List[str]:
         "Return available fields for a given endpoint."
-        return [ClimaCell.availabile_fields(endpoint)[0]]
+        return [ClimaCell.available_fields(endpoint)[0]]
 
     async def realtime(self, fields: List[str]) -> Dict[str, Any]:
         """Return realtime weather conditions from ClimaCell API."""
