@@ -5,13 +5,15 @@ from enum import IntEnum
 
 HEADERS = {"content-type": "application/json"}
 
-# V3 constants
-BASE_URL_V3 = "https://api.climacell.co/v3/weather"
-
 DAILY = "daily"
 HOURLY = "hourly"
 NOWCAST = "nowcast"
 REALTIME = "realtime"
+FORECASTS = "forecasts"
+
+# V3 constants
+BASE_URL_V3 = "https://api.climacell.co/v3/weather"
+
 FORECAST_NOWCAST = "nowcast"
 FORECAST_HOURLY = "forecast/hourly"
 FORECAST_DAILY = "forecast/daily"

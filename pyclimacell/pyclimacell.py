@@ -14,6 +14,7 @@ from .const import (
     DAILY,
     FIELDS_V3,
     FIELDS_V4,
+    FORECASTS,
     FORECAST_DAILY,
     FORECAST_DAILY_MAX_AGE,
     FORECAST_HOURLY,
@@ -336,7 +337,7 @@ class ClimaCellV4:
             and "intervals" in data["data"]["timelines"][0]
             and "values" in data["data"]["timelines"][0]["intervals"][0]
         ):
-            ret_data[REALTIME] = data["data"]["timelines"][0]["intervals"][0]["values"]
+            ret_data[CURRENT] = data["data"]["timelines"][0]["intervals"][0]["values"]
 
         data = await self._call_api(
             {
@@ -346,6 +347,7 @@ class ClimaCellV4:
             }
         )
         if "data" in data and "timelines" in data["data"]:
+            ret_data[FORECASTS] = {}
             for timeline in data["data"]["timelines"]:
                 if timeline["timestep"] == "1d":
                     key = DAILY
@@ -353,7 +355,7 @@ class ClimaCellV4:
                     key = HOURLY
                 else:
                     key = NOWCAST
-                ret_data[key] = timeline["intervals"]
+                ret_data[FORECASTS][key] = timeline["intervals"]
 
         return ret_data
 
