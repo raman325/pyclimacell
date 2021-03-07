@@ -23,3 +23,7 @@ class UnknownException(ClimaCellException):
 
 class CantConnectException(ClimaCellException):
     """Raise when client can't connect to ClimaCell API."""
+
+
+class InvalidTimestep(ClimaCellException):
+    """Raise when an invalid timestep is specified."""

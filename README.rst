@@ -17,17 +17,17 @@ Python ClimaCell API
 
 Python3.7+ package to access the `ClimaCell Weather API <https://www.climacell.co/weather-api/>`_
 
-Both an async module (``ClimaCell``) and a synchronous module (``ClimaCellSync``) are provided.
+Both an async module (``ClimaCellV4`` and ``ClimaCellV3``) and a synchronous module
+(``ClimaCellV3Sync`` and ``ClimaCellV4Sync``) are provided.
 
 Example Code
 -------------
 .. code-block:: python
 
-  from pyclimacell import ClimaCellSync
-  from pyclimacell.const import FORECAST_NOWCAST, REALTIME
+  from pyclimacell import ClimaCellV4Sync
   api = ClimaCellSync("MY_API_KEY", latitude, longitude)
-  print(api.realtime(api.available_fields(REALTIME)))
-  print(api.forecast_nowcast(api.available_fields(FORECAST_NOWCAST), start_time, timedelta_duration, timestep))
+  print(api.realtime(api.available_fields(timedelta(0))))
+  print(api.forecast_nowcast(api.available_fields(timedelta(minutes=5))), start_time, timedelta_duration, timestep))
 
 Features
 --------
