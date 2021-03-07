@@ -122,7 +122,7 @@ class ClimaCellV4:
             unit_system = "imperial"
 
         self._apikey = apikey
-        self.location = [latitude, longitude]
+        self.location = [float(latitude), float(longitude)]
         self.unit_system = unit_system.lower()
         self._session = session
         self._params = {
