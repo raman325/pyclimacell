@@ -418,7 +418,7 @@ class ClimaCellV4Sync(ClimaCellV4):
     ) -> Dict[str, Any]:
         """Return realtime weather and all forecasts."""
         return await super().realtime_and_all_forecasts(
-            nowcast_timestep=nowcast_timestep
+            realtime_fields, forecast_fields, nowcast_timestep=nowcast_timestep
         )
 
 
