@@ -10,7 +10,10 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = ["aiohttp>=3.6.2"]
+requirements = [
+    "aiohttp>=3.6.2",
+    "pytz"
+]
 
 setup_requirements = []
 
