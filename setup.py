@@ -45,6 +45,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/raman325/pyclimacell",
-    version="0.18.1",
+    version="0.18.2",
     zip_safe=False,
 )
