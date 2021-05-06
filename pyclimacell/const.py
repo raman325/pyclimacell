@@ -235,6 +235,18 @@ TYPE_PRECIPITATION = "precipitation"
 ALL_MEASUREMENTS = [MIN, MAX, AVG]
 NO_AVG = [MIN, MAX]
 
+
+class V3PollenIndex(IntEnum):
+    """Pollen index for V3 API."""
+
+    MINIMAL_TO_NONE = 0
+    LOW = 1
+    LOW_TO_MEDIUM = 2
+    MEDIUM = 3
+    MEDIUM_TO_HIGH = 4
+    HIGH = 5
+
+
 # V4 constants
 BASE_URL_V4 = "https://data.climacell.co/v4/timelines"
 CURRENT = "current"
